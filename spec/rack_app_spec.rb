@@ -44,7 +44,8 @@ describe RackApp do
 
 			# go forward 6 minutes
 			Timecop.travel(Time.now + 60 * 6) do
-				expect(response.body).to include('hits in the last five minutes 1')
+			  resp = get '/'
+				expect(resp.body).to include('hits in the last five minutes 1')
 			end
 		end
 	end

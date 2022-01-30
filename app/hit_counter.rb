@@ -9,14 +9,13 @@ class HitCounterMiddleware
 
 	def initialize(app)
     @app = app
-		@now = Time.now.to_i
   end
 
   def call(env)
-		record_hit(INTERVAL)
+		now = Time.now.to_i
+		record_hit(INTERVAL, now)
 		status, headers, body = @app.call(env)
-		# is this using the same 'now'?
-		hits = get_hits(INTERVAL)
+		hits = get_hits(INTERVAL, now)
 		[status, headers, body << "hits in the last five minutes #{hits}:" ]
 	end
 
@@ -24,9 +23,9 @@ class HitCounterMiddleware
 private
 
 
-	def record_hit(interval = INTERVAL)
+	def record_hit(interval = INTERVAL, now)
 		index = now % interval
-		# 'bust the cache' if necessary
+		# 'bust' the cache if necessary
 		unless now == @@times[index]
 			@@times[index] = now
 			@@hits[index] = 1
@@ -38,7 +37,7 @@ private
 
 
 	# default to 5 minutes
-	def get_hits(seconds = INTERVAL)
+	def get_hits(seconds = INTERVAL, now)
 		hit_count = 0
 		@@times.each_with_index do |time, index|
 			# if the value in the times array is within the interval, add it to the count
