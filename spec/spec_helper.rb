@@ -1,5 +1,6 @@
 require 'rack/test'
 require 'pry'
+require 'pry-byebug'
 require 'timecop'
 
 include Rack::Test::Methods
